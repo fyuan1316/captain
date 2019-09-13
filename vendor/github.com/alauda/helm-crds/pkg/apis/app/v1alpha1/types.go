@@ -10,8 +10,7 @@ import (
 	"github.com/ghodss/yaml"
 	"helm.sh/helm/pkg/chartutil"
 
-
-	funk "github.com/thoas/go-funk"
+	"github.com/thoas/go-funk"
 
 	"github.com/alauda/component-base/regex"
 	"github.com/fatih/structs"
@@ -25,7 +24,6 @@ const (
 	// FinalizerName is the finalizer name we append to each HelmRequest resource
 	FinalizerName = "captain.alauda.io"
 )
-
 
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
@@ -167,6 +165,37 @@ type ChartRepoList struct {
 	metav1.ListMeta `son:"metadata,omitempty"`
 
 	Items []ChartRepo `json:"items"`
+}
+
+// +genclient
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+type Chart struct {
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	Spec ChartSpec `json:"spec"`
+}
+
+type ChartSpec struct {
+	Versions []ChartVersion `json:"versions,omitempty"`
+}
+
+type ChartVersion struct {
+	Created     metav1.Time `json:"created,omitempty"`
+	Description string      `json:"description,omitempty"`
+	Digest      string      `json:"digest,omitempty"`
+	Version     string      `json:"version,omitempty"`
+	URLS        string      `json:"urls,omitempty"`
+}
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+type ChartList struct {
+	metav1.TypeMeta `json:",inline"`
+	// +optional
+	metav1.ListMeta `son:"metadata,omitempty"`
+
+	Items []Chart `json:"items"`
 }
 
 // +genclient
@@ -410,8 +439,6 @@ func (in *HelmRequest) IsClusterSynced(name string) bool {
 
 	return false
 }
-
-
 
 // ParseChartName is a simple function that parse chart name
 func ParseChartName(name string) (repo, chart string) {

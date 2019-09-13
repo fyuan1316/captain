@@ -38,7 +38,7 @@ github.com/alauda/component-base/hash
 github.com/alauda/component-base/system
 github.com/alauda/component-base/crd
 github.com/alauda/component-base/regex
-# github.com/alauda/helm-crds v0.0.0-20190904040405-5d13ef317cd8
+# github.com/alauda/helm-crds v0.0.0-20190904040405-5d13ef317cd8 => github.com/alauda/helm-crds v0.0.0-20190913030933-2750e4ad9e9f
 github.com/alauda/helm-crds/pkg/apis/app/v1alpha1
 github.com/alauda/helm-crds/pkg/client/clientset/versioned
 github.com/alauda/helm-crds/pkg/client/clientset/versioned/scheme

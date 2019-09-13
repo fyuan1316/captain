@@ -69,3 +69,7 @@ func (c *Controller) syncChartRepo(obj interface{}) {
 	return
 
 }
+
+func(c *Controller) createCharts() error {
+
+}
