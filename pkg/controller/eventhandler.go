@@ -40,6 +40,7 @@ func (c *Controller) newChartRepoHandler() cache.ResourceEventHandler {
 			if err := helm.RemoveRepository(cr.GetName()); err != nil {
 				klog.Error("remove repo from helm error:", err)
 			}
+			klog.Info("delete chartrepo: ", cr.GetName())
 		}
 	}
 
