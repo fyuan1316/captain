@@ -83,6 +83,7 @@ type Controller struct {
 	helmRequestLister listers.HelmRequestLister
 	helmRequestSynced cache.InformerSynced
 
+	chartRepoLister listers.ChartRepoLister
 	chartRepoSynced cache.InformerSynced
 
 	// ClusterCache is used to store Cluster resource
@@ -94,6 +95,8 @@ type Controller struct {
 	// time, and makes it easy to ensure we are never processing the same item
 	// simultaneously in two different workers.
 	workQueue workqueue.RateLimitingInterface
+
+	chartRepoWorkQueue workqueue.RateLimitingInterface
 	// recorder is an event recorder for recording Event resources to the
 	// Kubernetes API.
 	recorder record.EventRecorder
@@ -135,9 +138,11 @@ func NewController(mgr manager.Manager, opt *config.Options, stopCh <-chan struc
 		restConfig:        cfg,
 		recorder:          mgr.GetEventRecorderFor(util.ComponentName),
 		helmRequestLister: informer.Lister(),
+		chartRepoLister: repoInformer.Lister(),
 		helmRequestSynced: informer.Informer().HasSynced,
 		chartRepoSynced:   repoInformer.Informer().HasSynced,
 		workQueue:         workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "HelmRequests"),
+		chartRepoWorkQueue: workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "ChartRepos"),
 		// refresh frequently
 		ClusterCache: commoncache.New(1*time.Minute, 5*time.Minute),
 	}
@@ -173,6 +178,7 @@ func (c *Controller) GetClusterClient() clusterclientset.Interface {
 func (c *Controller) Start(stopCh <-chan struct{}) error {
 	defer utilruntime.HandleCrash()
 	defer c.workQueue.ShutDown()
+	defer c.chartRepoWorkQueue.ShutDown()
 
 	// Start the informer factories to begin populating the informer caches
 	klog.Info("Starting HelmRequest controller")
@@ -187,6 +193,7 @@ func (c *Controller) Start(stopCh <-chan struct{}) error {
 	// Launch two workers to process HelmRequest resources
 	for i := 0; i < 2; i++ {
 		go wait.Until(c.runWorker, time.Second, stopCh)
+		go wait.Until(c.runChartRepoWorker, time.Second, stopCh)
 	}
 
 	klog.Info("Started workers")
