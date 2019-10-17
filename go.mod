@@ -18,7 +18,7 @@ replace k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.0.0-
 
 replace github.com/deislabs/oras => github.com/deislabs/oras v0.7.0
 
-replace github.com/alauda/helm-crds => github.com/alauda/helm-crds v0.0.0-20190915014518-6c1be05f7d6e
+replace github.com/alauda/helm-crds => github.com/alauda/helm-crds v0.0.0-20191017012849-c0758f63dbf4
 
 replace github.com/docker/docker => github.com/moby/moby v0.7.3-0.20190826074503-38ab9da00309
 

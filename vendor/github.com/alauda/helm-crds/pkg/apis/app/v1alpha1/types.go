@@ -396,8 +396,13 @@ func (in *HelmRequest) Default() {
 // 1. check filed regex
 func (in *HelmRequest) ValidateCreate() error {
 	klog.V(4).Info("validate HelmRequest create: ", in.GetName())
-	if in.Spec.ClusterName != "" && !regex.IsValidResourceName(in.Spec.ClusterName) {
-		return in.nameRegexError(".spec.clusterName", in.Spec.ClusterName)
+	// if in.Spec.ClusterName != "" && !regex.IsValidResourceName(in.Spec.ClusterName) {
+	//	return in.nameRegexError(".spec.clusterName", in.Spec.ClusterName)
+	// }
+	// after we support multi-cluster watch for HelmRequest, clusterName should be
+	// always set to empty.
+	if in.Spec.ClusterName != "" {
+		return fmt.Errorf(".spec.clusterName should be empty")
 	}
 
 	if in.Spec.ReleaseName != "" && !regex.IsValidResourceName(in.Spec.ReleaseName) {
