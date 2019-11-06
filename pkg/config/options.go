@@ -39,6 +39,10 @@ type Options struct {
 	// run in-cluster mode). Hope there will be a better way in the feature.
 	GlobalClusterName string
 
+	// Define resync period for watched resources
+	HelmRequestResyncInterval int
+	ChartRepoResyncInterval int
+
 	// PrintVersion print the version and exist
 	PrintVersion bool
 }
@@ -78,5 +82,10 @@ func (opt *Options) BindFlags() {
 
 	flag.StringVar(&opt.MetricsBindAddress, "metrics-bind-address", ":6060",
 		"Setup bind address for metrics server, use \"\" to disable it")
+
+	flag.IntVar(&opt.ChartRepoResyncInterval, "chartrepo-resync-interval", 30,
+		"Resync interval for ChartRepo ")
+	flag.IntVar(&opt.HelmRequestResyncInterval, "helmrequest-resync-interval", 30,
+		"Resync interval for ChartRepo ")
 
 }

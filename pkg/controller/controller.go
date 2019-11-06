@@ -119,7 +119,7 @@ func NewController(mgr manager.Manager, opt *config.Options, stopCh <-chan struc
 	}
 
 	// kubeInformerFactory := kubeinformers.NewSharedInformerFactory(kubeClient, time.Second*30)
-	appInformerFactory := informers.NewSharedInformerFactory(appClient, time.Second*30)
+	appInformerFactory := informers.NewSharedInformerFactory(appClient, time.Second*opt.HelmRequestResyncInterval)
 	chartRepoInformerFactory := informers.NewSharedInformerFactoryWithOptions(appClient, time.Second*30, informers.WithNamespace(opt.ChartRepoNamespace))
 
 	informer := appInformerFactory.App().V1alpha1().HelmRequests()
