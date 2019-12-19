@@ -10,7 +10,7 @@ import (
 	"github.com/alauda/helm-crds/pkg/apis/app/v1alpha1"
 	"helm.sh/helm/pkg/repo"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/klog"
@@ -27,7 +27,8 @@ func (c *Controller) updateChartRepoStatus(cr *v1alpha1.ChartRepo, phase v1alpha
 	data.SetP(reason, "status.reason")
 	if phase == v1alpha1.ChartRepoSynced {
 		now, _ := v1.Now().MarshalQueryParameter()
-		data.Set(now, "metadata", "annotations", "alauda.io/last-sync-at")
+		k := c.GetConfig().LabelBaseDomain + "/last-sync-at"
+		data.Set(now, "metadata", "annotations", k)
 	}
 
 	_, err := c.appClientSet.AppV1alpha1().ChartRepos(cr.Namespace).Patch(
@@ -39,25 +40,6 @@ func (c *Controller) updateChartRepoStatus(cr *v1alpha1.ChartRepo, phase v1alpha
 	if err != nil {
 		klog.Error("update chartrepo error: ", err)
 	}
-
-	//_, err := c.appClientSet.AppV1alpha1().ChartRepos(cr.Namespace).Update(cr)
-	//if err != nil {
-	//	if apierrors.IsConflict(err) {
-	//		klog.Warningf("chartrepo %s update conflict, rerty... ", cr.GetName())
-	//		old, err := c.appClientSet.AppV1alpha1().ChartRepos(cr.Namespace).Get(cr.GetName(), v1.GetOptions{})
-	//		if err != nil {
-	//			klog.Error("chartrepo update-get error:", err)
-	//		} else {
-	//			cr.ResourceVersion = old.ResourceVersion
-	//			_, err := c.appClientSet.AppV1alpha1().ChartRepos(cr.Namespace).Update(cr)
-	//			if err != nil {
-	//				klog.Error("chartrepo update-update error:", err)
-	//			}
-	//		}
-	//	} else {
-	//		klog.Error("update chartrepo error: ", err)
-	//	}
-	//}
 }
 
 // syncChartRepo sync ChartRepo to helm repo store
@@ -96,7 +78,6 @@ func (c *Controller) syncChartRepo(obj interface{}) {
 	}
 
 	c.updateChartRepoStatus(cr, v1alpha1.ChartRepoSynced, "")
-	klog.Info("synced chartrepo: ", cr.GetName())
 	return
 
 }

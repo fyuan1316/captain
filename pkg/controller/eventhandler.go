@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"k8s.io/apimachinery/pkg/apis/meta/v1"
 	"reflect"
 
 	"github.com/alauda/captain/pkg/helm"
@@ -17,23 +18,16 @@ func (c *Controller) newChartRepoHandler() cache.ResourceEventHandler {
 	updateFunc := func(old, new interface{}) {
 		// oldChartRepo := old.(*alpha1.ChartRepo)
 		// newChartRepo := new.(*alpha1.ChartRepo)
-		klog.V(4).Info("receive new chartrepo")
-
-		// TODO: use a queue
-		//go c.syncChartRepo(new)
+		klog.V(4).Info("receive new chartrepo: ", old.(*alpha1.ChartRepo), new.(*alpha1.ChartRepo))
+		n, ok := new.(*alpha1.ChartRepo)
+		if ok {
+			now := v1.Now()
+			if n.GetAnnotations() != nil && n.GetAnnotations() []{
+			}
+		}
 
 		c.enqueueChartRepo(new)
 
-		//if oldChartRepo.Spec.Secret != nil && newChartRepo.Spec.Secret != nil {
-		//	if oldChartRepo.Spec.Secret.Name != newChartRepo.Spec.Secret.Name {
-		//		c.syncChartRepo(newChartRepo)
-		//		return
-		//	}
-		//	if oldChartRepo.Spec.Secret.Namespace != newChartRepo.Spec.Secret.Namespace {
-		//		c.syncChartRepo(newChartRepo)
-		//		return
-		//	}
-		//}
 	}
 
 	deleteFunc := func(obj interface{}) {

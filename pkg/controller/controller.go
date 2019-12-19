@@ -57,6 +57,10 @@ type clusterConfig struct {
 
 // Controller is the controller implementation for HelmRequest resources
 type Controller struct {
+
+	// avoid assigns vars....
+	options *config.Options
+
 	// kubeClient is a standard kubernetes clientset
 	// usage:
 	// 1. retrieve cluster admin token from secret
@@ -100,6 +104,10 @@ type Controller struct {
 	clusterRecorders          map[string]record.EventRecorder
 }
 
+func (c *Controller) GetConfig() *config.Options {
+	return c.options
+}
+
 //NewController create a new controller
 func NewController(mgr manager.Manager, opt *config.Options, stopCh <-chan struct{}) (*Controller, error) {
 	cfg := mgr.GetConfig()
@@ -120,12 +128,13 @@ func NewController(mgr manager.Manager, opt *config.Options, stopCh <-chan struc
 
 	// kubeInformerFactory := kubeinformers.NewSharedInformerFactory(kubeClient, time.Second*30)
 	appInformerFactory := informers.NewSharedInformerFactory(appClient, time.Second*30)
-	chartRepoInformerFactory := informers.NewSharedInformerFactoryWithOptions(appClient, time.Second*30, informers.WithNamespace(opt.ChartRepoNamespace))
+	chartRepoInformerFactory := informers.NewSharedInformerFactoryWithOptions(appClient, time.Second*120, informers.WithNamespace(opt.ChartRepoNamespace))
 
 	informer := appInformerFactory.App().V1alpha1().HelmRequests()
 	repoInformer := chartRepoInformerFactory.App().V1alpha1().ChartRepos()
 
 	controller := &Controller{
+		options: opt,
 		kubeClient:   kubeClient,
 		appClientSet: appClient,
 		clusterConfig: clusterConfig{

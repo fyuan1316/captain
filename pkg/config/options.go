@@ -39,6 +39,9 @@ type Options struct {
 	// run in-cluster mode). Hope there will be a better way in the feature.
 	GlobalClusterName string
 
+	// used for labels/anno...
+	LabelBaseDomain string
+
 	// PrintVersion print the version and exist
 	PrintVersion bool
 }
@@ -78,5 +81,8 @@ func (opt *Options) BindFlags() {
 
 	flag.StringVar(&opt.MetricsBindAddress, "metrics-bind-address", ":6060",
 		"Setup bind address for metrics server, use \"\" to disable it")
+
+	flag.StringVar(&opt.LabelBaseDomain, "label-base-domain", "alauda.io",
+		"Base domain for labels/annotations...")
 
 }

@@ -6,6 +6,9 @@ mod:
 build:
 	GO111MODULE=on CGO_ENABLED=0 go build -mod vendor -ldflags "-w -s -X main.version=${VERSION}" -v -o captain
 
+build-linux:
+	GO111MODULE=on CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod vendor -ldflags "-w -s -X main.version=${VERSION}" -v -o captain
+
 
 fmt:
 	find ./pkg -name \*.go  | xargs goimports -w
@@ -32,3 +35,7 @@ code-gen:
 	${GOPATH}/src/k8s.io/code-generator/generate-groups.sh all "github.com/alauda/captain/pkg/client" "github.com/alauda/captain/pkg/apis" app:v1alpha1
 
 check: fmt build lint test
+
+
+dev: build-linux
+	skaffold dev --cleanup=false

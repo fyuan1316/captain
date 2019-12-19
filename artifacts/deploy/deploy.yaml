@@ -25,6 +25,7 @@ spec:
             - /captain/captain
             - -cluster-namespace=captain
             - -chartrepo-namespace=captain
+            - -v=4
           image: alaudapublic/captain
           imagePullPolicy: IfNotPresent
           name: captain
